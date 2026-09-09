@@ -53,6 +53,8 @@ bool Player::updatePawn()
 {
   auto process = Engine::getProcess();
 
+  this->teamNum = process->read<uint8_t>(this->pawn + offsets::entities::base::m_iTeamNum);
+
   this->health = process->read<int>(pawn + offsets::entities::base::m_iHealth);
   this->isAlive = health > 0;
 
@@ -61,13 +63,26 @@ bool Player::updatePawn()
     origin = Vector3{0, 0, 0};
     velocity = Vector3{0, 0, 0};
     speed = 0;
+
+    shotsFired.old = 0;
+    shotsFired.current = 0;
+
+    isDefusing.old = false;
+    isDefusing.current = false;
+
+    isGrabbingHostage.old = false;
+    isGrabbingHostage.current = false;
+
+    bones.head = Vector3{0, 0, 0};
+    bones.chest = Vector3{0, 0, 0};
+    bones.pelvis = Vector3{0, 0, 0};
+
     return true;
   }
 
   this->origin = process->read<Vector3>(this->pawn + offsets::player::pawn::m_vOldOrigin);
   this->velocity = process->read<Vector3>(this->pawn + offsets::entities::base::m_vecAbsVelocity);
   this->speed = this->velocity.length();
-  this->teamNum = process->read<uint8_t>(this->pawn + offsets::entities::base::m_iTeamNum);
 
   int shotsFired_ = process->read<int>(this->pawn + offsets::player::pawn::m_iShotsFired);
   this->shotsFired.old = this->shotsFired.current;
