@@ -268,19 +268,19 @@ bool Dumper::loadOffsets()
       clientDLLData,
       offsets::entities::base::m_vecOrigin,
       "m_vecOrigin",
-      {"client.dll", "classes", "C_BaseModelEntity", "fields", "m_vecOrigin"});
+      {"client.dll", "classes", "CGameSceneNode", "fields", "m_vecOrigin"});
 
   success &= readOffset(
       clientDLLData,
       offsets::entities::base::m_modelState,
       "m_modelState",
-      {"client.dll", "classes", "C_BaseModelEntity", "fields", "m_modelState"});
+      {"client.dll", "classes", "CSkeletonInstance", "fields", "m_modelState"});
 
   success &= readOffset(
       clientDLLData,
       offsets::entities::base::m_flMaxSpeed,
       "m_flMaxSpeed",
-      {"client.dll", "classes", "C_BaseModelEntity", "fields", "m_flMaxSpeed"});
+      {"client.dll", "classes", "CCSWeaponBaseVData", "fields", "m_flMaxSpeed"});
 
   // | Player
 
