@@ -19,6 +19,11 @@ namespace offsets
     // offsets.dll -> [client_dll]
     inline std::ptrdiff_t dwViewRender = 0x23CB898;
     inline std::ptrdiff_t CCVars;
+    
+    // offsets.dll -> [engine2_dll]
+    inline std::ptrdiff_t dwWindowHeight = 0x9118D4;
+    // offsets.dll -> [engine2_dll]
+    inline std::ptrdiff_t dwWindowWidth = 0x9118D0;
   }
 
   namespace entities
@@ -30,7 +35,7 @@ namespace offsets
     {
       // client.dll -> [client_dll] -> [C_BaseEntity]
       inline std::ptrdiff_t m_pGameSceneNode = 0x330;
-      
+
       // client.dll -> [client_dll] -> [C_BaseEntity]
       inline std::ptrdiff_t m_iHealth = 0x34C;
       // client.dll -> [client_dll] -> [C_BaseEntity]
@@ -51,7 +56,8 @@ namespace offsets
       inline std::ptrdiff_t m_vecOrigin = 0x80;
       // client.dll -> [client_dll] -> [CSkeletonInstance]
       inline std::ptrdiff_t m_modelState = 0x140;
-      
+      inline std::ptrdiff_t m_boneArray = 0x80;
+
       // client.dll -> [client_dll] -> [CCSWeaponBaseVData]
       inline std::ptrdiff_t m_flMaxSpeed = 0x750;
     }
@@ -92,7 +98,7 @@ namespace offsets
       inline std::ptrdiff_t m_bIsGrabbingHostage = 0x1C7B;
       // client.dll -> [client_dll] -> [C_CSPlayerPawn]
       inline std::ptrdiff_t m_iShotsFired = 0x1C8C;
-      
+
       // client.dll -> [client_dll] -> [EntitySpottedState_t]
       inline std::ptrdiff_t m_bSpotted = 0x8;
       // client.dll -> [client_dll] -> [EntitySpottedState_t]

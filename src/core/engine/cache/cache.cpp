@@ -166,6 +166,7 @@ void Cache::debugData()
   std::cout << "              |- entityList = " << this->game.entityList << std::endl;
   std::cout << "              |- listEntry = " << this->game.listEntry << std::endl;
   std::cout << "              |- windowSize = " << this->game.windowSize << std::endl;
+  std::cout << "              |- displaySize = " << this->game.displaySize << std::endl;
   std::cout << std::endl;
   std::cout << "cache.globals |" << std::endl;
   std::cout << "              |- maxClients = " << this->globals.maxClients << std::endl;

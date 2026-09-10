@@ -208,6 +208,18 @@ bool Dumper::loadOffsets()
       "dwViewRender",
       {"client.dll", "dwViewRender"});
 
+  success &= readOffset(
+      offsetsData,
+      offsets::game::dwWindowWidth,
+      "dwWindowWidth",
+      {"engine.dll", "dwWindowWidth"});
+
+  success &= readOffset(
+      offsetsData,
+      offsets::game::dwWindowHeight,
+      "dwWindowHeight",
+      {"engine.dll", "dwWindowHeight"});
+
   // | Entities
   success &= readOffset(
       offsetsData,
