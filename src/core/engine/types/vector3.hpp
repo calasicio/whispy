@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "vector2.hpp"
+
 class Vector3
 {
 public:
@@ -193,4 +195,10 @@ public:
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x};
   };
+
+  // Conversion
+  Vector2 toVector2() const
+  {
+    return Vector2{x, y};
+  }
 };

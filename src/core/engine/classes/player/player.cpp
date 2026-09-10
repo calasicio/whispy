@@ -74,7 +74,7 @@ bool Player::updatePawn()
     isGrabbingHostage.current = false;
 
     bones.head = Vector3{0, 0, 0};
-    bones.chest = Vector3{0, 0, 0};
+    bones.neck = Vector3{0, 0, 0};
     bones.pelvis = Vector3{0, 0, 0};
 
     return true;
@@ -98,6 +98,7 @@ bool Player::updatePawn()
   this->isGrabbingHostage.old = this->isGrabbingHostage.current;
   this->isGrabbingHostage.current = isGrabbingHostage_;
 
+  updateBones();
   updateSoundStates();
 
   return true;
@@ -156,6 +157,31 @@ bool Player::updateSoundStates()
   if (isMakingSound)
   {
     this->lastSoundMade.timestamp = std::chrono::steady_clock::now();
+  }
+
+  return true;
+}
+
+bool Player::updateBones()
+{
+  auto process = Engine::getProcess();
+
+  uintptr_t gameSceneNode = process->read<uintptr_t>(this->pawn + offsets::entities::base::m_pGameSceneNode);
+  if (gameSceneNode)
+  {
+    uintptr_t boneArray = process->read<uintptr_t>(gameSceneNode + offsets::entities::base::m_modelState + offsets::entities::base::m_boneArray);
+
+    if (boneArray)
+    {
+      RenderBone_t boneBuffer[8];
+
+      if (process->read_raw(boneArray, &boneBuffer, sizeof(boneBuffer)))
+      {
+        this->bones.head = boneBuffer[BoneIndex::HEAD].position;
+        this->bones.neck = boneBuffer[BoneIndex::NECK].position;
+        this->bones.pelvis = boneBuffer[BoneIndex::PELVIS].position;
+      }
+    }
   }
 
   return true;

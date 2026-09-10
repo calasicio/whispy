@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 
+#include "core/engine/types/structs.hpp"
 #include "core/engine/types/vector2.hpp"
 #include "core/engine/types/vector3.hpp"
 
@@ -18,6 +19,13 @@ struct SoundEvent
   std::string soundName;
   float radius;
   std::chrono::steady_clock::time_point timestamp;
+};
+
+struct BoneData
+{
+  Vector3 head;
+  Vector3 neck;
+  Vector3 pelvis;
 };
 
 class Player
@@ -36,6 +44,14 @@ public:
 
   std::uintptr_t pawn;
   std::uintptr_t controller;
+
+  BoneData bones;
+  enum BoneIndex : int
+  {
+    HEAD = 7,
+    NECK = 6,
+    PELVIS = 1,
+  };
 
   int health;
   bool isAlive;
@@ -64,6 +80,7 @@ private:
   bool getController();
 
   bool updateSoundStates();
+  bool updateBones();
 
 protected:
   virtual bool updatePawn();
