@@ -78,6 +78,7 @@ bool Cache::updateImpl()
       if (player.pawn == localPlayer.pawn)
       {
         localPlayer.index = i;
+        localPlayer.isLocalPlayer = true;
         continue;
       }
 

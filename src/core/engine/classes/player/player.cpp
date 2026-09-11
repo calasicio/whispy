@@ -88,18 +88,21 @@ bool Player::updatePawn()
   this->shotsFired.old = this->shotsFired.current;
   this->shotsFired.current = shotsFired_;
 
-  this->spottedMask = process->read<uint32_t>(this->pawn + offsets::player::pawn::m_entitySpottedState + offsets::player::pawn::m_bSpottedByMask);
+  if (!isLocalPlayer)
+  {
+    this->spottedMask = process->read<uint32_t>(this->pawn + offsets::player::pawn::m_entitySpottedState + offsets::player::pawn::m_bSpottedByMask);
 
-  bool isDefusing_ = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsDefusing);
-  this->isDefusing.old = this->isDefusing.current;
-  this->isDefusing.current = isDefusing_;
+    bool isDefusing_ = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsDefusing);
+    this->isDefusing.old = this->isDefusing.current;
+    this->isDefusing.current = isDefusing_;
 
-  bool isGrabbingHostage_ = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsGrabbingHostage);
-  this->isGrabbingHostage.old = this->isGrabbingHostage.current;
-  this->isGrabbingHostage.current = isGrabbingHostage_;
+    bool isGrabbingHostage_ = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsGrabbingHostage);
+    this->isGrabbingHostage.old = this->isGrabbingHostage.current;
+    this->isGrabbingHostage.current = isGrabbingHostage_;
 
-  updateBones();
-  updateSoundStates();
+    updateBones();
+    updateSoundStates();
+  }
 
   return true;
 }

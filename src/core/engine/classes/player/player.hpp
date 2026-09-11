@@ -41,6 +41,7 @@ public:
 
 public:
   int8_t index = -1;
+  bool isLocalPlayer = false;
 
   std::uintptr_t pawn;
   std::uintptr_t controller;
