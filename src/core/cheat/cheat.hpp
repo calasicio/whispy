@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/engine/cache/cache.hpp"
+#include "features/vischeck/vischeck.hpp"
+#include "features/aim_controller/aim_controller.hpp"
 #include "features/rcs/rcs.hpp"
 #include "features/auto_strafe/auto_strafe.hpp"
 
@@ -30,6 +33,8 @@ private:
   void destroyImpl();
 
 private:
+  VisCheck visCheck;
+  AimController aimController{visCheck};
   RCS rcs;
   AutoStrafe autoStrafe;
 

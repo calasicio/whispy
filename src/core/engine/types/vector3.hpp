@@ -186,6 +186,13 @@ public:
            a.y * b.y +
            a.z * b.z;
   }
+  
+  float dot(const Vector3 &other) const
+  {
+    return x * other.x +
+           y * other.y +
+           z * other.z;
+  }
 
   // Cross product
   static Vector3 cross(const Vector3 &a, const Vector3 &b)
