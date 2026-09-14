@@ -13,4 +13,11 @@ namespace random
 
     return dis(gen);
   }
+
+  inline float generateGaussianNoise(float mean, float stddev)
+  {
+    std::normal_distribution<float> dist(mean, stddev);
+
+    return dist(gen);
+  }
 }

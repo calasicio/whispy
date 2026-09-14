@@ -3,21 +3,15 @@
 
 #include <cmath>
 #include <algorithm>
-#include <string>
 
 #include "core/engine/cache/cache.hpp"
-#include "utils/random/random.hpp"
 #include "utils/mouse/mouse.hpp"
-#include "utils/logger/logger.hpp"
-
-inline float smoothstep(float t)
-{
-  t = std::clamp(t, 0.0f, 1.0f);
-  return t * t * (SMOOTHSTEP_A - SMOOTHSTEP_B * t);
-}
+#include "utils/random/random.hpp"
 
 void RCS::update(float dt)
 {
+  (void)dt;
+
   Cache::withLock([this](const Cache &cache)
                   {
     if (!cache.localPlayer.isAlive)
@@ -28,88 +22,64 @@ void RCS::update(float dt)
 
     Vector3 aimPunch = cache.localPlayer.aimPunch;
     Vector2 currentAimPunch = {aimPunch.x, aimPunch.y};
+    int currentShots = cache.localPlayer.shotsFired.current;
 
-    if (cache.localPlayer.shotsFired.current <= 1)
+    if (currentShots <= 1)
     {
-      decayState();
-
-      Vector2 deltaPunch = limitedDeltaPunch;
-
-      Vector2 moveAmount = {
-          (deltaPunch.y / (cache.convars.sensitivity * -YAW_PITCH_FACTOR)) + accumulatedError.x,
-        (deltaPunch.x / (cache.convars.sensitivity * YAW_PITCH_FACTOR)) + accumulatedError.y};
-
-      int moveX = static_cast<int>(moveAmount.x);
-      int moveY = static_cast<int>(moveAmount.y);
-
-      accumulatedError.x = moveAmount.x - moveX;
-      accumulatedError.y = moveAmount.y - moveY;
-
-      if (moveX != 0 || moveY != 0)
-        mouse::moveMouseRelative(moveX, moveY);
-
-      oldAimPunch = currentAimPunch;
-
-      if (isSettled())
-        resetState(currentAimPunch);
-
+      resetState(currentAimPunch);
       return;
     }
 
-    Vector2 rawDeltaPunch = (currentAimPunch - oldAimPunch);
-    rawDeltaPunch = -rawDeltaPunch * 2;
-
-    // Pattern recall imperfection (slight rhythmic mis-calibration)
+    if (currentAimPunch.x != lastDetectedPunch.x || currentAimPunch.y != lastDetectedPunch.y)
     {
-      float recallError = std::sin(cache.localPlayer.shotsFired.current * RECALL_FREQ) * RECALL_AMP;
-      rawDeltaPunch.y += recallError;
+      lastDetectedPunch = currentAimPunch;
     }
+    Vector2 targetPunch = lastDetectedPunch;
 
-    Vector2 deltaPunch = rawDeltaPunch;
+    float pullFactorX = 0.0f;
+    float frictionX = 0.0f;
+    float pullFactorY = 0.0f;
+    float frictionY = 0.0f;
 
-    // EMA low-pass filter
+    if (currentShots <= 10)
     {
-      deltaPunch = {
-          filteredDeltaPunch.x + EMA_ALPHA * (rawDeltaPunch.x - filteredDeltaPunch.x),
-          filteredDeltaPunch.y + EMA_ALPHA * (rawDeltaPunch.y - filteredDeltaPunch.y)};
-      filteredDeltaPunch = deltaPunch;
+      pullFactorX = 0.15f; frictionX = 0.60f;
+      pullFactorY = 0.15f; frictionY = 0.60f;
     }
-
-    // Acceleration rate limiting with smoothstep (per-axis)
+    else
     {
-      Vector2 desired = deltaPunch;
-      Vector2 diff = desired - limitedDeltaPunch;
+      pullFactorX = 0.04f; frictionX = 0.90f;
 
-      float diffLenX = std::abs(diff.x);
-      if (diffLenX > 0.0f)
-      {
-        float t = (std::min)(diffLenX / MAX_ACCEL_X, 1.0f);
-        float easedT = smoothstep(t);
-        diff.x = (diff.x / diffLenX) * (MAX_ACCEL_X * easedT);
+      if (std::abs(targetPunch.y - currentSimulatedPunch.y) < 0.03f) {
+        pullFactorY = 0.0f; 
+        frictionY = 0.50f;
+      } else {
+        pullFactorY = 0.08f; 
+        frictionY = 0.75f;
       }
-
-      float diffLenY = std::abs(diff.y);
-      if (diffLenY > 0.0f)
-      {
-        float t = (std::min)(diffLenY / MAX_ACCEL_Y, 1.0f);
-        float easedT = smoothstep(t);
-        diff.y = (diff.y / diffLenY) * (MAX_ACCEL_Y * easedT);
-      }
-
-      limitedDeltaPunch += diff;
-      deltaPunch = limitedDeltaPunch;
     }
 
-    // Colored noise
+    springVelocityX = (springVelocityX + (targetPunch.x - currentSimulatedPunch.x) * pullFactorX) * frictionX;
+    springVelocityY = (springVelocityY + (targetPunch.y - currentSimulatedPunch.y) * pullFactorY) * frictionY;
+
+    Vector2 nextSimulatedPunch = {
+      currentSimulatedPunch.x + springVelocityX,
+      currentSimulatedPunch.y + springVelocityY
+    };
+
+    if (currentShots <= 8)
     {
-      Vector2 whiteNoise = {
-          random::rangeFloat(-1.0f, 1.0f),
-          random::rangeFloat(-1.0f, 1.0f)};
-
-      noiseOffset = noiseOffset * NOISE_CORRELATION + whiteNoise * NOISE_SCALE * (1.0f - NOISE_CORRELATION) - noiseOffset * NOISE_MEAN_REVERSION;
-
-      deltaPunch += noiseOffset;
+      nextSimulatedPunch.x += random::generateGaussianNoise(0.0f, 0.0002f);
+      nextSimulatedPunch.y += random::generateGaussianNoise(0.0f, 0.0001f);
     }
+    else
+    {
+      nextSimulatedPunch.x += random::generateGaussianNoise(0.0f, 0.0008f);
+      nextSimulatedPunch.y += random::generateGaussianNoise(0.0f, 0.0004f);
+    }
+
+    Vector2 deltaPunch = (nextSimulatedPunch - currentSimulatedPunch);
+    deltaPunch = -deltaPunch * 2.0f;
 
     Vector2 moveAmount = {
         (deltaPunch.y / (cache.convars.sensitivity * -YAW_PITCH_FACTOR)) + accumulatedError.x,
@@ -124,34 +94,23 @@ void RCS::update(float dt)
     if (moveX != 0 || moveY != 0)
       mouse::moveMouseRelative(moveX, moveY);
 
-    oldAimPunch = currentAimPunch; });
-};
-
-void RCS::decayState()
-{
-  filteredDeltaPunch *= RECOVERY_DECAY;
-  limitedDeltaPunch *= RECOVERY_DECAY;
-  noiseOffset *= RECOVERY_DECAY;
-}
-
-bool RCS::isSettled() const
-{
-  float residual = std::sqrt(
-      limitedDeltaPunch.x * limitedDeltaPunch.x +
-      limitedDeltaPunch.y * limitedDeltaPunch.y);
-
-  return residual < SETTLED_THRESHOLD;
+    currentSimulatedPunch = nextSimulatedPunch; });
 }
 
 void RCS::resetState(std::optional<Vector2> aimPunch)
 {
   if (aimPunch.has_value())
-    oldAimPunch = aimPunch.value();
+  {
+    lastDetectedPunch = aimPunch.value();
+    currentSimulatedPunch = aimPunch.value();
+  }
   else
-    oldAimPunch = {0.0f, 0.0f};
+  {
+    lastDetectedPunch = {0.0f, 0.0f};
+    currentSimulatedPunch = {0.0f, 0.0f};
+  }
 
+  springVelocityX = 0.0f;
+  springVelocityY = 0.0f;
   accumulatedError = {0.0f, 0.0f};
-  filteredDeltaPunch = {0.0f, 0.0f};
-  limitedDeltaPunch = {0.0f, 0.0f};
-  noiseOffset = {0.0f, 0.0f};
 }
