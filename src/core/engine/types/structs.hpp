@@ -32,9 +32,22 @@ struct CCSGO_HudRadar_t
   Vector3 m_origin_texture_position_difference;
 };
 
-struct alignas(16) RenderBone_t
+struct alignas(16) Bone
 {
   Vector3 position;
   float scale;
   Vector4 rotation;
+};
+
+struct CHitbox
+{
+  Vector3 minBounds;
+  Vector3 maxBounds;
+  float shapeRadius;
+};
+
+struct Hitbox
+{
+  Bone bone;
+  CHitbox hitbox;
 };

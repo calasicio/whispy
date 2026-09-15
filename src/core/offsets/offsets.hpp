@@ -19,7 +19,7 @@ namespace offsets
     // offsets.dll -> [client_dll]
     inline std::ptrdiff_t dwViewRender = 0x23CB898;
     inline std::ptrdiff_t CCVars;
-    
+
     // offsets.dll -> [engine2_dll]
     inline std::ptrdiff_t dwWindowHeight = 0x9118D4;
     // offsets.dll -> [engine2_dll]
@@ -58,8 +58,39 @@ namespace offsets
       inline std::ptrdiff_t m_modelState = 0x140;
       inline std::ptrdiff_t m_boneArray = 0x80;
 
+      // client.dll -> [client_dll] -> [CModelState]
+      inline std::ptrdiff_t m_hModel = 0xA0;
+
       // client.dll -> [client_dll] -> [CCSWeaponBaseVData]
       inline std::ptrdiff_t m_flMaxSpeed = 0x750;
+    }
+
+    namespace meshes
+    {
+      // animationsystem.dll -> [animationsystem_dll] -> [PermModelData_t]
+      inline std::ptrdiff_t m_refMeshes = 0x78;
+      // Bruteforce
+      inline std::ptrdiff_t m_hitboxData = 0x168;
+
+      namespace hitbox
+      {
+        inline std::ptrdiff_t array = 0x30;
+        inline std::ptrdiff_t count = 0x28;
+        inline std::ptrdiff_t size = 0x70;
+
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_name = 0x0;
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_sBoneName = 0x10;
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_vMinBounds = 0x18;
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_vMaxBounds = 0x24;
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_flShapeRadius = 0x30;
+        // animationsystem.dll -> [animationsystem_dll] -> [CHitBox]
+        inline std::ptrdiff_t m_nHitBoxIndex = 0x48;
+      }
     }
   }
 

@@ -43,3 +43,56 @@ inline bool worldToScreen(const Vector3 &worldPos, ImVec2 &screenPos, const View
 
   return true;
 }
+
+inline bool intersectRayCapsule(const Vector3 &rayOrigin, const Vector3 &rayDir, const Vector3 &minBounds, const Vector3 &maxBounds, float radius)
+{
+  Vector3 d1 = rayDir;
+  Vector3 d2 = maxBounds - minBounds;
+  Vector3 w0 = rayOrigin - minBounds;
+
+  float a = Vector3::dot(d1, d1);
+  float b = Vector3::dot(d1, d2);
+  float c = Vector3::dot(d1, w0);
+  float d = Vector3::dot(d2, d2);
+  float e = Vector3::dot(d2, w0);
+
+  float denom = a * d - b * b;
+  float s = 0.0f, t = 0.0f;
+
+  if (std::abs(denom) < 0.0001f)
+  {
+    s = 0.0f;
+    t = (b > d ? e / b : e / d);
+  }
+  else
+  {
+    s = (b * e - c * d) / denom;
+    t = (a * e - b * c) / denom;
+  }
+
+  if (t < 0.0f)
+  {
+    t = 0.0f;
+    s = -c / a;
+  }
+  else if (t > 1.0f)
+  {
+    t = 1.0f;
+    s = (b - c) / a;
+  }
+
+  if (s < 0.0f)
+  {
+    s = 0.0f;
+    t = e / d;
+    if (t < 0.0f)
+      t = 0.0f;
+    else if (t > 1.0f)
+      t = 1.0f;
+  }
+
+  Vector3 c1 = rayOrigin + (d1 * s);
+  Vector3 c2 = minBounds + (d2 * t);
+
+  return c1.distance(c2) <= radius;
+}

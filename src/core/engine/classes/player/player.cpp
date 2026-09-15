@@ -73,10 +73,6 @@ bool Player::updatePawn()
     isGrabbingHostage.old = false;
     isGrabbingHostage.current = false;
 
-    bones.head = Vector3{0, 0, 0};
-    bones.neck = Vector3{0, 0, 0};
-    bones.pelvis = Vector3{0, 0, 0};
-
     return true;
   }
 
@@ -101,6 +97,7 @@ bool Player::updatePawn()
     this->isGrabbingHostage.current = isGrabbingHostage_;
 
     updateBones();
+    // updateHitboxes();
     updateSoundStates();
   }
 
@@ -169,22 +166,100 @@ bool Player::updateBones()
 {
   auto process = Engine::getProcess();
 
+  this->hitboxes.clear();
+
   uintptr_t gameSceneNode = process->read<uintptr_t>(this->pawn + offsets::entities::base::m_pGameSceneNode);
   if (gameSceneNode)
   {
     uintptr_t boneArray = process->read<uintptr_t>(gameSceneNode + offsets::entities::base::m_modelState + offsets::entities::base::m_boneArray);
 
+    Bone boneBuffer[23];
+
     if (boneArray)
     {
-      RenderBone_t boneBuffer[8];
-
       if (process->read_raw(boneArray, &boneBuffer, sizeof(boneBuffer)))
       {
-        this->bones.head = boneBuffer[BoneIndex::HEAD].position;
-        this->bones.neck = boneBuffer[BoneIndex::NECK].position;
-        this->bones.pelvis = boneBuffer[BoneIndex::PELVIS].position;
+        for (int i = 0; i < 23; i++)
+        {
+          this->bones[i] = boneBuffer[i];
+
+          const CHitbox *hitbox = getBoneHitbox(i);
+          if (hitbox)
+          {
+            this->hitboxes.emplace_back(Hitbox{boneBuffer[i], *hitbox});
+          }
+        }
       }
     }
+  }
+
+  return true;
+}
+
+bool alreadyDidIt = false;
+bool Player::updateHitboxes()
+{
+  if (alreadyDidIt)
+  {
+    return false;
+  }
+
+  std::cout << "Getting hitboxes" << std::endl;
+
+  alreadyDidIt = true;
+
+  auto process = Engine::getProcess();
+
+  uintptr_t gameSceneNode = process->read<uintptr_t>(this->pawn + offsets::entities::base::m_pGameSceneNode);
+  if (!gameSceneNode)
+    return false;
+
+  uintptr_t tempModel = process->read<uintptr_t>(gameSceneNode + offsets::entities::base::m_modelState + offsets::entities::base::m_hModel);
+  if (!tempModel)
+    return false;
+
+  uintptr_t model = process->read<uintptr_t>(tempModel);
+  if (!model)
+    return false;
+
+  uintptr_t tempRefMeshes = process->read<uintptr_t>(model + offsets::entities::meshes::m_refMeshes);
+  if (!tempRefMeshes)
+    return false;
+
+  uintptr_t refMeshes = process->read<uintptr_t>(tempRefMeshes);
+  if (!refMeshes)
+    return false;
+
+  uintptr_t hitboxData = process->read<uintptr_t>(refMeshes + offsets::entities::meshes::m_hitboxData);
+  if (!hitboxData)
+    return false;
+
+  int hitboxCount = process->read<int>(hitboxData + offsets::entities::meshes::hitbox::count);
+  if (hitboxCount <= 0 || hitboxCount > 64)
+    return false;
+
+  uintptr_t hitboxes = process->read<uintptr_t>(hitboxData + offsets::entities::meshes::hitbox::array);
+  if (!hitboxes)
+    return false;
+
+  for (int i = 0; i < hitboxCount; i++)
+  {
+
+    uintptr_t targetHitbox = hitboxes + (offsets::entities::meshes::hitbox::size * i);
+
+    uintptr_t boneNamePtr = process->read<uintptr_t>(targetHitbox + offsets::entities::meshes::hitbox::m_sBoneName);
+    std::string boneName = boneNamePtr ? process->read_string(boneNamePtr) : "unknown";
+
+    int boneIndex = getBoneIndex(boneName);
+
+    Bone bone = this->bones[boneIndex];
+
+    Vector3 minBounds = process->read<Vector3>(targetHitbox + offsets::entities::meshes::hitbox::m_vMinBounds);
+    Vector3 maxBounds = process->read<Vector3>(targetHitbox + offsets::entities::meshes::hitbox::m_vMaxBounds);
+    float shapeRadius = process->read<float>(targetHitbox + offsets::entities::meshes::hitbox::m_flShapeRadius);
+
+    // std::cout << "Hitbox: { bone: {" << bone.position << ", " << bone.rotation << ", " << bone.scale << "}, " << boneName << ", " << minBounds << ", " << maxBounds << ", " << shapeRadius << "}" << std::endl;
+    std::cout << "Hitbox: " << boneName << "(" << boneIndex << "), " << minBounds << ", " << maxBounds << ", " << shapeRadius << "}" << std::endl;
   }
 
   return true;

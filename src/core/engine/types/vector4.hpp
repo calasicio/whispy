@@ -146,4 +146,11 @@ public:
   {
     return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
   }
+
+  // Logging
+  friend std::ostream &operator<<(std::ostream &os, const Vector4 &vec)
+  {
+    os << "{ " << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << " }";
+    return os;
+  }
 };
