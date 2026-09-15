@@ -34,11 +34,11 @@ void AimController::update(float dt)
         Vector3 worldMin = scaledMin.transformByVector3(bone.rotation) + bone.position;
         Vector3 worldMax = scaledMax.transformByVector3(bone.rotation) + bone.position;
 
-        if (intersectRayCapsule(cameraPos, rayDir, worldMin, worldMax, scaledRadius))
-        {
-          Vector3 hitboxCenter = (worldMin + worldMax) / 2.0f;
+        Vector3 exactHitPoint;
 
-          if (visCheck_.isVisible(cameraPos, hitboxCenter))
+        if (intersectRayCapsule(cameraPos, rayDir, worldMin, worldMax, scaledRadius, exactHitPoint))
+        {
+          if (visCheck_.isVisible(cameraPos, exactHitPoint))
           {
             isValidTarget = true;
             break;

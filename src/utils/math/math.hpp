@@ -44,7 +44,7 @@ inline bool worldToScreen(const Vector3 &worldPos, ImVec2 &screenPos, const View
   return true;
 }
 
-inline bool intersectRayCapsule(const Vector3 &rayOrigin, const Vector3 &rayDir, const Vector3 &minBounds, const Vector3 &maxBounds, float radius)
+inline bool intersectRayCapsule(const Vector3 &rayOrigin, const Vector3 &rayDir, const Vector3 &minBounds, const Vector3 &maxBounds, float radius, Vector3 &outHitPoint)
 {
   Vector3 d1 = rayDir;
   Vector3 d2 = maxBounds - minBounds;
@@ -91,8 +91,13 @@ inline bool intersectRayCapsule(const Vector3 &rayOrigin, const Vector3 &rayDir,
       t = 1.0f;
   }
 
-  Vector3 c1 = rayOrigin + (d1 * s);
-  Vector3 c2 = minBounds + (d2 * t);
+  Vector3 rayClosest = rayOrigin + (d1 * s);
+  Vector3 capClosest = minBounds + (d2 * t);
 
-  return c1.distance(c2) <= radius;
+  if (rayClosest.distance(capClosest) <= radius)
+  {
+    outHitPoint = rayClosest;
+    return true;
+  }
+  return false;
 }
