@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(aimmy
-  VERSION 2.0.1
+project(whispy
+  VERSION 2.0.2
   LANGUAGES CXX
 )
 

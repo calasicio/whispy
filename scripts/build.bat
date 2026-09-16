@@ -5,34 +5,34 @@ for %%I in ("%~dp0..") do set "ROOT_DIR=%%~fI"
 
 set "BUILD_DIR=%ROOT_DIR%\build"
 set "RUNTIME_DIR=%ROOT_DIR%\runtime"
-set "SOURCE=%BUILD_DIR%\bin\aimmy.exe"
-set "DEST=%RUNTIME_DIR%\aimmy.exe"
+set "SOURCE=%BUILD_DIR%\bin\whispy.exe"
+set "DEST=%RUNTIME_DIR%\whispy.exe"
 
 echo.
-echo [Aimmy] Configuring CMake...
+echo [Whispy] Configuring CMake...
 cmake -S "%ROOT_DIR%" -B "%BUILD_DIR%"
 
 if errorlevel 1 (
     echo.
-    echo [Aimmy] CMake configuration failed.
+    echo [Whispy] CMake configuration failed.
     pause
     exit /b 1
 )
 
 echo.
-echo [Aimmy] Building Debug...
+echo [Whispy] Building Debug...
 cmake --build "%BUILD_DIR%" --config Debug
 
 if errorlevel 1 (
     echo.
-    echo [Aimmy] Build failed.
+    echo [Whispy] Build failed.
     pause
     exit /b 1
 )
 
 if not exist "%SOURCE%" (
     echo.
-    echo [Aimmy] Built executable was not found:
+    echo [Whispy] Built executable was not found:
     echo %SOURCE%
     pause
     exit /b 1
@@ -43,20 +43,20 @@ if not exist "%RUNTIME_DIR%" (
 )
 
 echo.
-echo [Aimmy] Copying executable...
+echo [Whispy] Copying executable...
 copy /Y "%SOURCE%" "%DEST%" >nul
 
 if errorlevel 1 (
     echo.
-    echo [Aimmy] Failed to copy executable.
+    echo [Whispy] Failed to copy executable.
     pause
     exit /b 1
 )
 
 echo.
 echo ========================================
-echo [Aimmy] Build successful!
-echo [Aimmy] Runtime: %DEST%
+echo [Whispy] Build successful!
+echo [Whispy] Runtime: %DEST%
 echo ========================================
 echo.
 

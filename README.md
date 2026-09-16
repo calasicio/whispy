@@ -1,4 +1,4 @@
-# Aimmy
+# Whispy
 
 A somewhat stealthy external cheat for Counter-Strike 2
 

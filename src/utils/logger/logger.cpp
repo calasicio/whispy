@@ -30,7 +30,7 @@ namespace logger
   void log(Level level, std::string_view message)
   {
     std::cout
-        << "[Aimmy] ["
+        << "[Whispy] ["
         << levelToString(level)
         << "] : "
         << message

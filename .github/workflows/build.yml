@@ -42,8 +42,8 @@ jobs:
       - name: Upload Debug Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aimmy-debug
-          path: ${{ env.BUILD_DIR }}/bin/aimmy.exe
+          name: whispy-debug
+          path: ${{ env.BUILD_DIR }}/bin/whispy.exe
           retention-days: 7
 
       - name: Build Release
@@ -52,8 +52,8 @@ jobs:
       - name: Upload Release Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: aimmy-release
-          path: ${{ env.BUILD_DIR }}/bin/aimmy.exe
+          name: whispy-release
+          path: ${{ env.BUILD_DIR }}/bin/whispy.exe
           retention-days: 30
 
   release:
@@ -70,15 +70,15 @@ jobs:
       - name: Download Release Artifact
         uses: actions/download-artifact@v4
         with:
-          name: aimmy-release
+          name: whispy-release
           path: ./dist
 
       - name: Package Release
         shell: pwsh
         run: |
-          $name = "aimmy-${{ github.ref_name }}"
+          $name = "whispy-${{ github.ref_name }}"
           New-Item -ItemType Directory -Force -Path "$name"
-          Copy-Item "dist/aimmy.exe" "$name/"
+          Copy-Item "dist/whispy.exe" "$name/"
           if (Test-Path "runtime/cs2-dumper.exe") {
             Copy-Item "runtime/cs2-dumper.exe" "$name/"
           }
@@ -87,11 +87,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Aimmy ${{ github.ref_name }}
+          name: Whispy ${{ github.ref_name }}
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           files: |
-            aimmy-*.zip
+            whispy-*.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

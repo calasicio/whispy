@@ -111,7 +111,7 @@ bool Dumper::runDumper()
   {
     logger::fatal(
         "Could not find cs2-dumper.exe, "
-        "please make sure it is in the same directory as aimmy");
+        "please make sure it is in the same directory as whispy");
 
     return false;
   }
