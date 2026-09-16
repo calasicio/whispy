@@ -26,31 +26,35 @@ void AimController::update(float dt)
 
     bool isAccurate = true;
 
-    if (!cache.localPlayer.isOnGround || cache.localPlayer.moveType != 2) 
     {
-      isAccurate = false;
-    }
-    else 
-    {
-      Vector2 relVelocity = cache.localPlayer.relVelocity;
-      float speed2D = std::hypot(relVelocity.x, relVelocity.y);
-      
-      float maxWeaponSpeed = cache.localPlayer.maxMovementSpeed; 
-
-      float accuracyThreshold = maxWeaponSpeed * 0.34f;
-
-      if (speed2D > accuracyThreshold) 
+      if (!cache.localPlayer.isOnGround || cache.localPlayer.moveType != 2) 
       {
         isAccurate = false;
       }
-    }
+      else if (cache.localPlayer.currentWeaponId == 9 || cache.localPlayer.currentWeaponId == 40) 
+      {
+        if (!cache.localPlayer.isScoped || cache.localPlayer.currentWeaponInnacuracy > 0.01f)
+        {
+          isAccurate = false;
+        }
+      }
 
-    if (!isAccurate)
-    {
-      if (hasTarget) hasTarget = false;
-      if (isClickPending) isClickPending = false;
-      
-      return;
+      if (isAccurate)
+      {
+        float accuracyThreshold = cache.localPlayer.maxMovementSpeed * 0.34f;
+        
+        if (cache.localPlayer.speed > accuracyThreshold) 
+        {
+          isAccurate = false;
+        }
+      }
+
+      if (!isAccurate)
+      {
+        hasTarget = false;
+        isClickPending = false;
+        return; 
+      }
     }
 
     Vector3 cameraPos = cache.localPlayer.cameraPos;
@@ -155,5 +159,6 @@ void AimController::update(float dt)
         mouse::setButtonUp(1);
         isShooting = false;
       }
-    } });
+    }
+  });
 }

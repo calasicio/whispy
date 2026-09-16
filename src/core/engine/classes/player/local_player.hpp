@@ -13,8 +13,10 @@ public:
   Vector2 relVelocity = {0, 0};
 
   uint16_t currentWeaponId;
+  float currentWeaponInnacuracy;
   float maxMovementSpeed = 250;
 
+  bool isScoped = false;
   bool isOnGround = true;
   uint8_t moveType;
 

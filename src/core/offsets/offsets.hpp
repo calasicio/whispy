@@ -122,6 +122,8 @@ namespace offsets
       // client.dll -> [client_dll] -> [C_CSPlayerPawn]
       inline std::ptrdiff_t m_pAimPunchServices = 0x14B8;
       // client.dll -> [client_dll] -> [C_CSPlayerPawn]
+      inline std::ptrdiff_t m_bIsScoped = 0x1C78;
+      // client.dll -> [client_dll] -> [C_CSPlayerPawn]
       inline std::ptrdiff_t m_entitySpottedState = 0x1C60;
       // client.dll -> [client_dll] -> [C_CSPlayerPawn]
       inline std::ptrdiff_t m_bIsDefusing = 0x1C7A;
@@ -143,6 +145,8 @@ namespace offsets
     inline std::ptrdiff_t m_pWeaponServices = 0x1208;
     // client.dll -> [client_dll] -> [CPlayer_WeaponServices]
     inline std::ptrdiff_t m_hActiveWeapon = 0x60;
+    // client.dll -> [client_dll] -> [C_CSWeaponBase]
+    inline std::ptrdiff_t m_fAccuracyPenalty = 0x17F0;
     // client.dll -> [client_dll] -> [C_EconEntity]
     inline std::ptrdiff_t m_AttributeManager = 0x11A8;
     // client.dll -> [client_dll] -> [C_AttributeContainer]

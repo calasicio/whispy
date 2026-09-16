@@ -66,11 +66,12 @@ bool LocalPlayer::updatePawn()
   Vector3 eyeOffset = process->read<Vector3>(this->pawn + offsets::entities::base::m_vecViewOffset);
   this->cameraPos = this->origin + eyeOffset;
 
-
   if (!updateAimPunch())
   {
     this->aimPunch = {0, 0, 0};
   }
+
+  this->isScoped = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsScoped);
 
   return true;
 }
@@ -138,6 +139,7 @@ void LocalPlayer::updateWeapon()
 
   this->currentWeaponId = process->read<uint16_t>(
       weaponEntity + offsets::weapon::m_AttributeManager + offsets::weapon::m_Item + offsets::weapon::m_iItemDefinitionIndex);
+  this->currentWeaponInnacuracy = process->read<float>(weaponEntity + offsets::weapon::m_fAccuracyPenalty);
 
   uintptr_t vData = process->read<uintptr_t>(weaponEntity + offsets::entities::base::m_nSubclassID + 0x08);
 
