@@ -19,4 +19,5 @@ public:
   uintptr_t listEntry;
 
   Vector2 windowSize = {0, 0};
+  Vector2 displaySize = {0, 0};
 };

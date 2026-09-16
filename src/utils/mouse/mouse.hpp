@@ -41,4 +41,72 @@ namespace mouse
 
     return (GetAsyncKeyState(vKey) & 0x8000) != 0;
   }
+
+  inline void setButtonDown(int button)
+  {
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
+
+    switch (button)
+    {
+    case 1:
+      input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+      break;
+    case 2:
+      input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+      break;
+    case 3:
+      input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+      break;
+    case 4:
+      input.mi.dwFlags = MOUSEEVENTF_XDOWN;
+      input.mi.mouseData = XBUTTON1;
+      break;
+    case 5:
+      input.mi.dwFlags = MOUSEEVENTF_XDOWN;
+      input.mi.mouseData = XBUTTON2;
+      break;
+    default:
+      return;
+    }
+
+    SendInput(1, &input, sizeof(INPUT));
+  }
+
+  inline void setButtonUp(int button)
+  {
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
+
+    switch (button)
+    {
+    case 1:
+      input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+      break;
+    case 2:
+      input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+      break;
+    case 3:
+      input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+      break;
+    case 4:
+      input.mi.dwFlags = MOUSEEVENTF_XUP;
+      input.mi.mouseData = XBUTTON1;
+      break;
+    case 5:
+      input.mi.dwFlags = MOUSEEVENTF_XUP;
+      input.mi.mouseData = XBUTTON2;
+      break;
+    default:
+      return;
+    }
+
+    SendInput(1, &input, sizeof(INPUT));
+  }
+
+  inline void clickButton(int button)
+  {
+    setButtonDown(button);
+    setButtonUp(button);
+  }
 }

@@ -121,11 +121,13 @@ bool Renderer::handleState()
   if (pressed_end)
     this->isRunning = false;
 
-  bool ctrlDown = (GetAsyncKeyState(VK_LCONTROL) & 0x8000) != 0;
-  bool shiftDown = (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0;
-  bool comboPressed = ctrlDown && shiftDown;
+  // bool ctrlDown = (GetAsyncKeyState(VK_LCONTROL) & 0x8000) != 0;
+  // bool shiftDown = (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0;
+  // bool comboPressed = ctrlDown && shiftDown;
 
-  if (comboPressed)
+  bool qDown = (GetAsyncKeyState('Q') & 0x8000) != 0;
+
+  if (qDown)
   {
     if (allowRenderOverlayToggle)
     {

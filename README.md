@@ -5,8 +5,10 @@ A somewhat stealthy external cheat for Counter-Strike 2
 ## Features
 
 - Recoil compensation (RCS)
-- Radar that matches with the in-game UI
+- Radar that matches with the in-game UI and only shows based on the situation
 - Automatic counter strafe
+- Triggerbot
+- Automatically switch when using snipers (QQ, 31)
 
 ## How to use
 
@@ -18,12 +20,23 @@ A somewhat stealthy external cheat for Counter-Strike 2
 - [X] RCS
 - [X] RCS Humanizer
 - [X] Radar
+- [X] Situational Radar
 - [X] Auto counter strafe
-- [ ] Triggerbot
-- [ ] Aimbot
-- [ ] Aimbot with RCS
-- [ ] Aim assist
-- [ ] Aim assist with RCS
+- [ ] Configuration System
+- [X] Triggerbot
+- [X] Auto Switch
+- [ ] Bunny Hop
+- [ ] GUI
+- [ ] Nade helper
+
+## FAQ
+
+### What triggers the radar to show enemies?
+
+Enemies will be shown for 5 seconds on the radar when:
+- They are shooting
+- Makes a step that is heard by you or teammates
+- Spotted by you or teammates
 
 ## License & Copyright
 

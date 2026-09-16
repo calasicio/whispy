@@ -5,17 +5,18 @@
 class LocalPlayer : public Player
 {
 public:
-  LocalPlayer() : Player(), shotsFired(0) {}
+  LocalPlayer() : Player() {}
 
   bool update();
 
 public:
-  int shotsFired;
-
-  Vector3 velocity = {0, 0, 0};
   Vector2 relVelocity = {0, 0};
+
+  uint16_t currentWeaponId;
+  float currentWeaponInnacuracy;
   float maxMovementSpeed = 250;
 
+  bool isScoped = false;
   bool isOnGround = true;
   uint8_t moveType;
 

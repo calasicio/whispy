@@ -66,12 +66,12 @@ bool LocalPlayer::updatePawn()
   Vector3 eyeOffset = process->read<Vector3>(this->pawn + offsets::entities::base::m_vecViewOffset);
   this->cameraPos = this->origin + eyeOffset;
 
-  this->shotsFired = process->read<int>(this->pawn + offsets::player::pawn::m_iShotsFired);
-
   if (!updateAimPunch())
   {
     this->aimPunch = {0, 0, 0};
   }
+
+  this->isScoped = process->read<bool>(this->pawn + offsets::player::pawn::m_bIsScoped);
 
   return true;
 }
@@ -95,8 +95,6 @@ bool LocalPlayer::updateAimPunch()
 void LocalPlayer::updateVelocity()
 {
   auto process = Engine::getProcess();
-
-  this->velocity = process->read<Vector3>(this->pawn + offsets::entities::base::m_vecAbsVelocity);
 
   float yawRadians = this->viewAngle.y * (3.14159265f / 180.0f);
   float fwdX = std::cos(yawRadians);
@@ -139,8 +137,9 @@ void LocalPlayer::updateWeapon()
   if (!weaponEntity)
     return;
 
-  // this->currentWeaponID = process->read<uint16_t>(
-  //     weaponEntity + offsets::weapon::m_AttributeManager + offsets::weapon::m_Item + offsets::weapon::m_iItemDefinitionIndex);
+  this->currentWeaponId = process->read<uint16_t>(
+      weaponEntity + offsets::weapon::m_AttributeManager + offsets::weapon::m_Item + offsets::weapon::m_iItemDefinitionIndex);
+  this->currentWeaponInnacuracy = process->read<float>(weaponEntity + offsets::weapon::m_fAccuracyPenalty);
 
   uintptr_t vData = process->read<uintptr_t>(weaponEntity + offsets::entities::base::m_nSubclassID + 0x08);
 
