@@ -1,16 +1,19 @@
 #pragma once
 
 #include <cmath>
-
+#include <numbers>
 #include <imgui.h>
+
 #include "core/engine/types/vector2.hpp"
 #include "core/engine/types/vector3.hpp"
 #include "core/engine/types/structs.hpp"
 
+inline const float M_PI_F = std::numbers::pi_v<float>;
+
 inline Vector3 anglesToForward(const Vector3 &angles)
 {
-  float pitchRad = angles.x * (3.14159265358979323846f / 180.0f);
-  float yawRad = angles.y * (3.14159265358979323846f / 180.0f);
+  float pitchRad = angles.x * (M_PI_F / 180.0f);
+  float yawRad = angles.y * (M_PI_F / 180.0f);
 
   float cp = std::cos(pitchRad);
   float sp = std::sin(pitchRad);
@@ -42,6 +45,34 @@ inline bool worldToScreen(const Vector3 &worldPos, ImVec2 &screenPos, const View
   screenPos.y = (displaySize.y * 0.5f) - (ndcY * displaySize.y * 0.5f);
 
   return true;
+}
+
+inline Vector3 vectorToAngles(const Vector3 &delta)
+{
+  float hyp = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+  float pitch = std::atan2(-delta.z, hyp) * (180.0f / M_PI_F);
+  float yaw = std::atan2(delta.y, delta.x) * (180.0f / M_PI_F);
+  return {pitch, yaw, 0.0f};
+}
+
+inline Vector3 normalizeAngles(Vector3 angles)
+{
+  while (angles.y > 180.0f)
+    angles.y -= 360.0f;
+  while (angles.y < -180.0f)
+    angles.y += 360.0f;
+  while (angles.x > 89.0f)
+    angles.x -= 180.0f;
+  while (angles.x < -89.0f)
+    angles.x += 180.0f;
+  angles.z = 0.0f;
+  return angles;
+}
+
+inline float getFOV(const Vector3 &viewAngles, const Vector3 &targetAngles)
+{
+  Vector3 delta = normalizeAngles(targetAngles - viewAngles);
+  return std::sqrt(delta.x * delta.x + delta.y * delta.y);
 }
 
 inline bool intersectRayCapsule(const Vector3 &rayOrigin, const Vector3 &rayDir, const Vector3 &minBounds, const Vector3 &maxBounds, float radius, Vector3 &outHitPoint)

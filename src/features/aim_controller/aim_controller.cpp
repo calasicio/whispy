@@ -1,6 +1,8 @@
 #include "aim_controller.hpp"
+#include "aim_controller_constants.hpp"
 
 #include "utils/mouse/mouse.hpp"
+#include "utils/random/random.hpp"
 #include "utils/math/math.hpp"
 #include "utils/logger/logger.hpp"
 
@@ -8,24 +10,44 @@ void AimController::update(float dt)
 {
   Cache::withLock([this](const Cache &cache)
                   {
-    Vector3 cameraPos = cache.localPlayer.cameraPos;
+    if (!mouse::isButtonPressed(5))
+    {
+      if (isShooting)
+      {
+        mouse::setButtonUp(1);
+        isShooting = false;
+      }
 
+      hasTarget = false;
+      isClickPending = false;
+
+      return;
+    }
+
+    Vector3 cameraPos = cache.localPlayer.cameraPos;
+    Vector3 aimPunch = cache.localPlayer.aimPunch * 2;
     Vector3 aimAngles = cache.localPlayer.viewAngle;
+    
+    aimAngles -= aimPunch;
     aimAngles.z = 0.0f;
+
     Vector3 rayDir = anglesToForward(aimAngles).normalized();
 
-    for (auto &player : cache.players) 
+    bool shouldShoot = false;
+    for (auto &player : cache.players)
     {
-      if (!player.isAlive || player.teamNum == cache.localPlayer.teamNum) continue;
+      if (!player.isAlive || player.teamNum == cache.localPlayer.teamNum)
+        continue;
 
       bool isValidTarget = false;
 
       for (int i = 0; i < 19; i++)
       {
-        const auto& hb = player.hitboxes[i];
-        if (hb.hitbox.shapeRadius <= 0.0f) continue;
+        const auto &hb = player.hitboxes[i];
+        if (hb.hitbox.shapeRadius <= 0.0f)
+          continue;
 
-        const auto& bone = hb.bone;
+        const auto &bone = hb.bone;
 
         Vector3 scaledMin = hb.hitbox.minBounds * bone.scale;
         Vector3 scaledMax = hb.hitbox.maxBounds * bone.scale;
@@ -46,9 +68,64 @@ void AimController::update(float dt)
         }
       }
 
-      if (isValidTarget) 
+      if (isValidTarget)
       {
-        logger::info("VALID TARGET IN CROSSHAIR!");
+        shouldShoot = true;
+        break;
       }
-    } });
+    }
+
+    auto now = std::chrono::steady_clock::now();
+    
+    if (shouldShoot)
+    {
+      if (!hasTarget) 
+      {
+          hasTarget = true;
+          firstTargetTime = now;
+          
+          activeTriggerDelay = random::rangeInt(TRIGGER_DELAY_MIN_MS, TRIGGER_DELAY_MAX_MS);
+
+          isClickPending = true;
+      }
+
+      lastTargetTime = now; 
+    }
+    else
+    {
+      if (hasTarget) 
+      {
+        hasTarget = false;
+      }
+    }
+  
+    if (isClickPending)
+    {
+      auto elapsedAcquire = std::chrono::duration_cast<std::chrono::milliseconds>(now - firstTargetTime).count();
+      
+      if (elapsedAcquire >= activeTriggerDelay) 
+      {
+        mouse::setButtonDown(1);
+        isShooting = true;
+        isClickPending = false;
+        
+        activeReleaseDelay = random::rangeInt(RELEASE_DELAY_MIN_MS, RELEASE_DELAY_MAX_MS);
+
+        if (!shouldShoot) {
+          lastTargetTime = now;
+        }
+      }
+    }
+
+    if (isShooting && !shouldShoot)
+    {
+      auto elapsedLost = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastTargetTime).count();
+      
+      if (elapsedLost >= activeReleaseDelay) 
+      {
+        mouse::setButtonUp(1);
+        isShooting = false;
+      }
+    }
+  });
 }

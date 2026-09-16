@@ -14,6 +14,13 @@ namespace random
     return dis(gen);
   }
 
+  inline int rangeInt(int min, int max)
+  {
+    std::uniform_int_distribution<int> dis(min, max);
+
+    return dis(gen);
+  }
+
   inline float generateGaussianNoise(float mean, float stddev)
   {
     std::normal_distribution<float> dist(mean, stddev);

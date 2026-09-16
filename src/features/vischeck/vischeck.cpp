@@ -230,6 +230,6 @@ bool VisCheck::rayHitsTree(TriKDNode *node, const Vector3 &origin, const Vector3
 bool VisCheck::isVisible(const Vector3 &from, const Vector3 &to) const
 {
   if (!kdTree)
-    return false;
+    return true;
   return !rayHitsTree(kdTree, from, to);
 }

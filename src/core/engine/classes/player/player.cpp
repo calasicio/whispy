@@ -73,6 +73,8 @@ bool Player::updatePawn()
     isGrabbingHostage.old = false;
     isGrabbingHostage.current = false;
 
+    hitboxes.clear();
+
     return true;
   }
 

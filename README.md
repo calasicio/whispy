@@ -20,7 +20,7 @@ A somewhat stealthy external cheat for Counter-Strike 2
 - [X] Radar
 - [X] Auto counter strafe
 - [ ] Configuration System
-- [ ] Triggerbot
+- [X] Triggerbot
 - [ ] Aimbot
 - [ ] Aimbot with RCS
 - [ ] Aim assist
