@@ -23,5 +23,10 @@ bool Game::update()
 
   this->windowSize = {static_cast<float>(width), static_cast<float>(height)};
 
+  const int displayWidth = process->read<int>(engine.base + offsets::game::dwWindowWidth);
+  const int displayHeight = process->read<int>(engine.base + offsets::game::dwWindowHeight);
+
+  this->displaySize = {static_cast<float>(displayWidth), static_cast<float>(displayHeight)};
+
   return true;
 }

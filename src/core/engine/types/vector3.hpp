@@ -2,6 +2,9 @@
 
 #include <cmath>
 
+#include "vector2.hpp"
+#include "vector4.hpp"
+
 class Vector3
 {
 public:
@@ -185,6 +188,13 @@ public:
            a.z * b.z;
   }
 
+  float dot(const Vector3 &other) const
+  {
+    return x * other.x +
+           y * other.y +
+           z * other.z;
+  }
+
   // Cross product
   static Vector3 cross(const Vector3 &a, const Vector3 &b)
   {
@@ -193,4 +203,38 @@ public:
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x};
   };
+
+  // Conversion
+  Vector2 toVector2() const
+  {
+    return Vector2{x, y};
+  }
+
+  Vector3 transformByVector3(const Vector4 &q)
+  {
+    float xx = q.x * q.x;
+    float yy = q.y * q.y;
+    float zz = q.z * q.z;
+    float xy = q.x * q.y;
+    float xz = q.x * q.z;
+    float yz = q.y * q.z;
+    float wx = q.w * q.x;
+    float wy = q.w * q.y;
+    float wz = q.w * q.z;
+
+    Vector3 result;
+
+    result.x = x * (1.0f - 2.0f * (yy + zz)) + y * (2.0f * (xy - wz)) + z * (2.0f * (xz + wy));
+    result.y = x * (2.0f * (xy + wz)) + y * (1.0f - 2.0f * (xx + zz)) + z * (2.0f * (yz - wx));
+    result.z = x * (2.0f * (xz - wy)) + y * (2.0f * (yz + wx)) + z * (1.0f - 2.0f * (xx + yy));
+
+    return result;
+  }
+
+  // Logging
+  friend std::ostream &operator<<(std::ostream &os, const Vector3 &vec)
+  {
+    os << "{ " << vec.x << ", " << vec.y << ", " << vec.z << " }";
+    return os;
+  }
 };

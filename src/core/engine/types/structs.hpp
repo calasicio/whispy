@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector3.hpp"
+#include "vector4.hpp"
 
 struct ViewMatrix
 {
@@ -29,4 +30,24 @@ struct CCSGO_HudRadar_t
   float m_map_texture_scale;
   float m_max_visibility_squared;
   Vector3 m_origin_texture_position_difference;
+};
+
+struct alignas(16) Bone
+{
+  Vector3 position;
+  float scale;
+  Vector4 rotation;
+};
+
+struct CHitbox
+{
+  Vector3 minBounds;
+  Vector3 maxBounds;
+  float shapeRadius;
+};
+
+struct Hitbox
+{
+  Bone bone;
+  CHitbox hitbox;
 };
