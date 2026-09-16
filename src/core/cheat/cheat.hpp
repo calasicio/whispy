@@ -5,6 +5,7 @@
 #include "features/aim_controller/aim_controller.hpp"
 #include "features/rcs/rcs.hpp"
 #include "features/auto_strafe/auto_strafe.hpp"
+#include "features/auto_switch/auto_switch.hpp"
 
 class Cheat
 {
@@ -37,6 +38,7 @@ private:
   AimController aimController{visCheck};
   RCS rcs;
   AutoStrafe autoStrafe;
+  AutoSwitch autoSwitch;
 
 private:
   bool isRunning = true;

@@ -64,6 +64,7 @@ void Cheat::threadImpl()
     aimController.update(dt);
     rcs.update(dt);
     autoStrafe.update(dt);
+    autoSwitch.update(dt);
 
     std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
   }

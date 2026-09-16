@@ -11,6 +11,8 @@ public:
 
 public:
   Vector2 relVelocity = {0, 0};
+
+  uint16_t currentWeaponId;
   float maxMovementSpeed = 250;
 
   bool isOnGround = true;

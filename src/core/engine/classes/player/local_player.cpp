@@ -136,8 +136,8 @@ void LocalPlayer::updateWeapon()
   if (!weaponEntity)
     return;
 
-  // this->currentWeaponID = process->read<uint16_t>(
-  //     weaponEntity + offsets::weapon::m_AttributeManager + offsets::weapon::m_Item + offsets::weapon::m_iItemDefinitionIndex);
+  this->currentWeaponId = process->read<uint16_t>(
+      weaponEntity + offsets::weapon::m_AttributeManager + offsets::weapon::m_Item + offsets::weapon::m_iItemDefinitionIndex);
 
   uintptr_t vData = process->read<uintptr_t>(weaponEntity + offsets::entities::base::m_nSubclassID + 0x08);
 
